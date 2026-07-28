@@ -1,0 +1,333 @@
+/* ============================================================
+   HEALING NINJAS — style.css
+   SECTION 1: LAYOUT
+
+   This file currently handles structure and spacing only.
+   Colors, typography, and visual polish come next.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   1.1  FOUNDATION
+   ------------------------------------------------------------ */
+
+/* By default, if you give an element 300px width plus padding,
+   the browser makes it WIDER than 300px. border-box tells the
+   browser to include padding and border inside the width you
+   asked for. Almost every real project starts with this. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  line-height: 1.6;
+}
+
+img {
+  /* Images are inline by default, which leaves a mysterious gap
+     underneath them. block removes it. max-width keeps an image
+     from overflowing its container on a narrow screen. */
+  display: block;
+  max-width: 100%;
+}
+
+
+/* ------------------------------------------------------------
+   1.2  PAGE CONTAINER
+
+   Content stops growing at 1100px and centers itself. Without
+   a cap, lines of text stretch across a wide monitor and become
+   genuinely hard to read.
+   ------------------------------------------------------------ */
+
+.site-header,
+main,
+.site-footer {
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+
+/* ------------------------------------------------------------
+   1.3  HEADER
+   ------------------------------------------------------------ */
+
+.site-header {
+  padding-top: 3rem;
+  padding-bottom: 2rem;
+}
+
+.site-title {
+  margin: 0 0 0.25rem;
+}
+
+.site-tagline {
+  margin: 0 0 1rem;
+}
+
+.site-intro {
+  /* A separate, tighter cap just for prose. Around 65 characters
+     per line is the comfortable reading range — the 1100px page
+     container is too wide for a paragraph. */
+  max-width: 60ch;
+  margin: 0;
+}
+
+
+/* ------------------------------------------------------------
+   1.4  CATEGORY GRID
+
+   This is the most important layout rule on the page, and the
+   one worth understanding fully.
+
+   repeat(auto-fit, minmax(260px, 1fr)) means:
+     - Each column is at least 260px wide
+     - 1fr means leftover space is shared equally between them
+     - auto-fit tells the browser to fit as many columns as it can
+
+   On a wide monitor that produces four columns. On a laptop,
+   three. On a phone, one. No media queries, no breakpoints —
+   the browser does the arithmetic. This is why the desktop
+   layout you asked for will already work on a phone.
+   ------------------------------------------------------------ */
+
+.categories {
+  padding-bottom: 3rem;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1rem;
+}
+
+.category-card {
+  /* Buttons don't stretch to fill a grid cell on their own. */
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+
+  text-align: left;
+  cursor: pointer;
+}
+
+.category-img {
+  width: 100%;
+  /* Locks every card image to the same shape regardless of the
+     source file's dimensions, so the grid stays even. */
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.category-name,
+.category-blurb {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.category-blurb {
+  padding-bottom: 1rem;
+}
+
+
+/* ------------------------------------------------------------
+   1.5  SEARCH AND FILTERS
+
+   Grid was right for the cards because they should be uniform.
+   Filters are Flexbox because the buttons are all different
+   widths and should wrap naturally onto the next line rather
+   than sit in rigid columns.
+
+   That's the general rule: Grid when you want a structure,
+   Flexbox when you want a flow.
+   ------------------------------------------------------------ */
+
+.search-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 32rem;
+  padding: 0.75rem 1rem;
+  font: inherit;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.filter-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+
+  /* fieldset ships with a browser default border and padding
+     that look dated. Reset them and control it ourselves. */
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.filter-legend {
+  /* A legend sits outside normal flex flow, so give it its own
+     full-width line above the buttons. */
+  width: 100%;
+  padding: 0;
+  margin-bottom: 0.25rem;
+}
+
+.filter-btn,
+.clear-btn {
+  padding: 0.4rem 0.85rem;
+  font: inherit;
+  cursor: pointer;
+}
+
+.clear-btn {
+  align-self: flex-start;
+}
+
+
+/* ------------------------------------------------------------
+   1.6  RESULTS
+   ------------------------------------------------------------ */
+
+.result-count {
+  margin: 0 0 1rem;
+}
+
+.listings {
+  display: grid;
+  /* Wider minimum than the category cards — listing cards carry
+     an address, hours, badges, and reviews, so they need room. */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+  padding-bottom: 3rem;
+}
+
+.listing {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.listing-img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+}
+
+.listing-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+
+  /* Lets the body absorb any extra height so that cards in the
+     same row end up the same size and their footers line up. */
+  flex: 1;
+}
+
+.listing-name {
+  margin: 0;
+}
+
+.listing-meta,
+.listing-description,
+.listing-address,
+.listing-hours {
+  margin: 0;
+}
+
+.listing-badges,
+.listing-reviews {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.listing-reviews {
+  flex-direction: column;
+}
+
+.listing-contact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.listing-address,
+.listing-hours {
+  /* Force these onto their own lines above the action links. */
+  width: 100%;
+}
+
+.listing-verification {
+  /* margin-top: auto pushes this to the bottom of the card no
+     matter how short the description above it is. */
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+.verification-status,
+.report-link {
+  margin: 0;
+}
+
+
+/* ------------------------------------------------------------
+   1.7  FOOTER
+   ------------------------------------------------------------ */
+
+.site-footer {
+  padding-top: 2rem;
+  padding-bottom: 3rem;
+}
+
+
+/* ------------------------------------------------------------
+   1.8  UTILITIES
+   ------------------------------------------------------------ */
+
+/* Hides an element visually while keeping it available to
+   screen readers. Used on the search input's label.
+
+   display: none would hide it from screen readers too, which
+   defeats the purpose — this shrinks it to a single clipped
+   pixel instead. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Anything with the hidden attribute stays hidden even though
+   we set display on some of these elements elsewhere. */
+[hidden] {
+  display: none !important;
+}

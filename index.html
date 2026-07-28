@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Healing Ninjas — Free &amp; Low-Cost Wellness in NYC</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <!-- ============================================
+       HEADER — what this site is and who it's for
+       ============================================ -->
+  <header class="site-header">
+    <h1 class="site-title">Healing Ninjas</h1>
+    <p class="site-tagline">
+      Free and low-cost wellness across all five boroughs.
+    </p>
+    <p class="site-intro">
+      Finding support shouldn't depend on knowing the right person.
+      Healing Ninjas brings together wellness services across New York City —
+      written in plain language, with the cost stated up front, what
+      insurance is accepted, and what other people said about being
+      there.
+    </p>
+  </header>
+
+
+  <main>
+
+    <!-- ============================================
+         CATEGORY CARDS — the six modalities
+         ============================================ -->
+    <section class="categories" aria-labelledby="categories-heading">
+      <h2 id="categories-heading">What are you looking for?</h2>
+
+      <div class="category-grid">
+
+        <button class="category-card" data-category="mental-health">
+          <img class="category-img" src="images/categories/mental-health.jpg" alt="" width="400" height="260" loading="lazy">
+          <span class="category-name">Mental Health &amp; Counseling</span>
+          <span class="category-blurb">Therapy, support groups, crisis help</span>
+        </button>
+
+        <button class="category-card" data-category="physical-health">
+          <img class="category-img" src="images/categories/physical-health.jpg" alt="" width="400" height="260" loading="lazy">
+          <span class="category-name">Physical Health &amp; Clinics</span>
+          <span class="category-blurb">Checkups, dental, vision, walk-in care</span>
+        </button>
+
+        <button class="category-card" data-category="food">
+          <img class="category-img" src="images/categories/food.jpg" alt="" width="400" height="260" loading="lazy">
+          <span class="category-name">Food &amp; Nutrition</span>
+          <span class="category-blurb">Pantries, hot meals, SNAP help</span>
+        </button>
+
+        <button class="category-card" data-category="movement">
+          <img class="category-img" src="images/categories/movement.jpg" alt="" width="400" height="260" loading="lazy">
+          <span class="category-name">Movement &amp; Fitness</span>
+          <span class="category-blurb">Free gyms, classes, rec centers</span>
+        </button>
+
+        <button class="category-card" data-category="recovery">
+          <img class="category-img" src="images/categories/recovery.jpg" alt="" width="400" height="260" loading="lazy">
+          <span class="category-name">Recovery &amp; Substance Support</span>
+          <span class="category-blurb">Meetings, outpatient, harm reduction</span>
+        </button>
+
+        <button class="category-card" data-category="community">
+          <img class="category-img" src="images/categories/community.jpg" alt="" width="400" height="260" loading="lazy">
+          <span class="category-name">Community &amp; Healing Spaces</span>
+          <span class="category-blurb">Peer groups, cultural and healing programs</span>
+        </button>
+
+      </div>
+    </section>
+
+
+    <!-- ============================================
+         RESULTS AREA — search, filters, and listings
+         ============================================ -->
+    <section class="results-area" aria-labelledby="results-heading">
+      <h2 id="results-heading">Browse services</h2>
+
+      <!-- Search -->
+      <div class="search-wrapper">
+        <label for="search-input" class="visually-hidden">
+          Search services
+        </label>
+        <input
+          type="search"
+          id="search-input"
+          class="search-input"
+          placeholder="Search by name or keyword..."
+        >
+      </div>
+
+      <!-- Filters -->
+      <div class="filters">
+
+        <fieldset class="filter-group">
+          <legend class="filter-legend">Borough</legend>
+          <button class="filter-btn" data-filter="borough" data-value="all">All</button>
+          <button class="filter-btn" data-filter="borough" data-value="Bronx">Bronx</button>
+          <button class="filter-btn" data-filter="borough" data-value="Brooklyn">Brooklyn</button>
+          <button class="filter-btn" data-filter="borough" data-value="Manhattan">Manhattan</button>
+          <button class="filter-btn" data-filter="borough" data-value="Queens">Queens</button>
+          <button class="filter-btn" data-filter="borough" data-value="Staten Island">Staten Island</button>
+        </fieldset>
+
+        <fieldset class="filter-group">
+          <legend class="filter-legend">Cost</legend>
+          <button class="filter-btn" data-filter="cost" data-value="all">All</button>
+          <button class="filter-btn" data-filter="cost" data-value="Free">Free</button>
+          <button class="filter-btn" data-filter="cost" data-value="Sliding Scale">Sliding scale</button>
+          <button class="filter-btn" data-filter="cost" data-value="Low-Cost">Low-cost</button>
+        </fieldset>
+
+        <fieldset class="filter-group">
+          <legend class="filter-legend">Payment</legend>
+          <button class="filter-btn" data-filter="payment" data-value="all">All</button>
+          <button class="filter-btn" data-filter="payment" data-value="no-cost">No cost to you</button>
+          <button class="filter-btn" data-filter="payment" data-value="medicaid">Takes Medicaid</button>
+          <button class="filter-btn" data-filter="payment" data-value="insurance">Takes insurance</button>
+          <button class="filter-btn" data-filter="payment" data-value="uninsured">No insurance needed</button>
+        </fieldset>
+
+        <!-- Stackable: a user can need several of these at once.
+             These combine with AND. -->
+        <fieldset class="filter-group filter-group--multi">
+          <legend class="filter-legend">Who is welcome</legend>
+          <button class="filter-btn" data-filter="access" data-value="reentry">
+            Welcomes people with a record
+          </button>
+          <button class="filter-btn" data-filter="access" data-value="no-id">
+            No ID or status required
+          </button>
+          <button class="filter-btn" data-filter="access" data-value="lgbtq">
+            LGBTQ+ affirming
+          </button>
+          <button class="filter-btn" data-filter="access" data-value="trans">
+            Trans &amp; nonbinary affirming
+          </button>
+          <button class="filter-btn" data-filter="access" data-value="confidential">
+            Not reported to parole or probation
+          </button>
+          <button class="filter-btn" data-filter="access" data-value="wheelchair">
+            Wheelchair accessible
+          </button>
+          <button class="filter-btn" data-filter="access" data-value="youth">
+            Youth-focused (under 24)
+          </button>
+          <button class="filter-btn" data-filter="access" data-value="childcare">
+            Childcare available
+          </button>
+        </fieldset>
+
+        <!-- Single-select: describes who the program is designed for,
+             which is a different question from who is welcome. -->
+        <fieldset class="filter-group">
+          <legend class="filter-legend">Who it serves</legend>
+          <button class="filter-btn" data-filter="serves" data-value="all">All</button>
+          <button class="filter-btn" data-filter="serves" data-value="all-genders">All genders</button>
+          <button class="filter-btn" data-filter="serves" data-value="women">Women &amp; femmes</button>
+          <button class="filter-btn" data-filter="serves" data-value="men">Men</button>
+          <button class="filter-btn" data-filter="serves" data-value="trans-nonbinary">Trans &amp; nonbinary</button>
+        </fieldset>
+
+        <button class="clear-btn" id="clear-filters">Clear all filters</button>
+      </div>
+
+      <!-- Result count — JavaScript will update this text -->
+      <p class="result-count" id="result-count"></p>
+
+      <!-- Listings container — JavaScript will fill this in.
+           It starts empty on purpose. -->
+      <div class="listings" id="listings"></div>
+
+    </section>
+
+  </main>
+
+
+  <!-- ============================================
+       LISTING CARD TEMPLATE
+
+       <template> markup is parsed but NOT rendered. Nothing
+       here appears on the page. JavaScript clones this block
+       once per service and fills in the text and image.
+
+       Keeping the card structure here instead of building HTML
+       strings inside JavaScript means the markup stays in the
+       markup file, and it can't accidentally execute anything
+       a provider typed into a description.
+       ============================================ -->
+  <template id="listing-template">
+    <article class="listing">
+
+      <!-- Photo of the location or service.
+           src and alt are set by JavaScript. -->
+      <img class="listing-img"
+           src=""
+           alt=""
+           width="600"
+           height="400"
+           loading="lazy">
+
+      <div class="listing-body">
+        <h3 class="listing-name"></h3>
+        <p class="listing-meta"></p>
+        <p class="listing-description"></p>
+
+        <!-- Cost, insurance, and access badges get added here -->
+        <ul class="listing-badges"></ul>
+
+        <!-- CONTACT
+             These are real links, not plain text. On a phone,
+             tapping the phone number dials it and tapping the
+             address opens directions. -->
+        <div class="listing-contact">
+          <p class="listing-address"></p>
+          <p class="listing-hours"></p>
+
+          <a class="listing-phone" href="" hidden>Call</a>
+          <a class="listing-directions" href="" target="_blank" rel="noopener noreferrer" hidden>Directions</a>
+          <a class="listing-website" href="" target="_blank" rel="noopener noreferrer" hidden>Website</a>
+        </div>
+
+        <!-- Reviews get added here -->
+        <ul class="listing-reviews"></ul>
+
+        <!-- VERIFICATION
+             Tells the user how old this information is and who
+             checked it, so they can judge how much to trust it. -->
+        <footer class="listing-verification">
+          <p class="verification-status">
+            Last verified
+            <time class="verification-date" datetime=""></time>
+            by <span class="verification-source"></span>
+          </p>
+          <a class="report-link"
+             href="mailto:hello@example.org?subject=Outdated%20listing"
+             >Something out of date? Let us know</a>
+        </footer>
+
+      </div>
+
+    </article>
+  </template>
+
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="site-footer">
+    <p>
+      Healing Ninjas is a community project. Access and inclusion labels reflect
+      what each provider has told us, verified by phone where possible.
+      Things change — please call ahead.
+    </p>
+    <p>
+      Built in NYC. <a href="https://github.com/YOUR-USERNAME/healing-ninjas">View the code</a>.
+    </p>
+  </footer>
+
+</body>
+</html>
