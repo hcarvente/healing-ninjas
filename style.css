@@ -331,3 +331,295 @@ main,
 [hidden] {
   display: none !important;
 }
+
+
+/* ============================================================
+   SECTION 2: VISUAL STYLING
+
+   Design direction: NYC wayfinding. High contrast, bold type,
+   color that carries meaning rather than decorates.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   2.1  DESIGN TOKENS
+
+   Every color and size in this file is defined once here and
+   referenced everywhere else with var(). Change a value here
+   and it updates across the whole site.
+
+   :root means "the top of the document," so these are
+   available to every element on the page.
+   ------------------------------------------------------------ */
+
+:root {
+  /* --- Color --- */
+  --ink:          #101715;   /* body text, near-black with a green cast */
+  --ink-soft:     #4A5551;   /* secondary text, still passes contrast */
+  --canvas:       #EDF1EE;   /* page background */
+  --surface:      #FFFFFF;   /* cards sit on top of the canvas */
+  --line:         #D3DBD7;   /* borders and dividers */
+
+  --brand:        #0C5F4E;   /* deep pine — primary actions, headings */
+  --brand-lift:   #14A57C;   /* brighter pine — hover and active */
+  --signal:       #E8A317;   /* amber — verification, attention */
+  --welcome:      #5B3FD1;   /* violet — access badges, the signature */
+
+  /* --- Spacing scale ---
+     A fixed set of steps instead of arbitrary numbers. Using a
+     scale is why a page looks composed rather than assembled. */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  /* --- Shape --- */
+  --radius:      6px;
+  --radius-pill: 999px;
+
+  /* --- Type --- */
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body:    "Public Sans", system-ui, sans-serif;
+}
+
+
+/* ------------------------------------------------------------
+   2.2  TYPOGRAPHY AND BASE
+   ------------------------------------------------------------ */
+
+body {
+  font-family: var(--font-body);
+  font-size: 1.0625rem;   /* ~17px — larger than default; this gets
+                             read on phones in bad light */
+  color: var(--ink);
+  background-color: var(--canvas);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.02em;  /* large type looks loose at default
+                               spacing; tightening it slightly is
+                               what makes headlines feel designed */
+}
+
+a {
+  color: var(--brand);
+}
+
+
+/* ------------------------------------------------------------
+   2.3  HEADER
+   ------------------------------------------------------------ */
+
+.site-header {
+  border-bottom: 3px solid var(--ink);
+  margin-bottom: var(--space-8);
+}
+
+.site-title {
+  font-size: clamp(2.5rem, 7vw, 4rem);
+  /* clamp(minimum, preferred, maximum) — the browser picks a size
+     based on viewport width but never goes below 2.5rem or above
+     4rem. One line replaces three media queries. */
+  text-transform: uppercase;
+  letter-spacing: -0.03em;
+  color: var(--brand);
+}
+
+.site-tagline {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.site-intro {
+  color: var(--ink-soft);
+}
+
+
+/* ------------------------------------------------------------
+   2.4  SECTION HEADINGS
+   ------------------------------------------------------------ */
+
+.categories h2,
+.results-area h2 {
+  font-size: 1.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding-bottom: var(--space-2);
+  border-bottom: 2px solid var(--line);
+  margin-bottom: var(--space-6);
+}
+
+
+/* ------------------------------------------------------------
+   2.5  CATEGORY CARDS
+   ------------------------------------------------------------ */
+
+.category-card {
+  background-color: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  color: var(--ink);
+
+  /* transition tells the browser to animate between states over
+     150ms instead of snapping. Applied to the button, not to
+     :hover — that way it eases both in and out. */
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.category-name {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.category-blurb {
+  font-size: 0.9375rem;
+  color: var(--ink-soft);
+}
+
+.category-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 4px 4px 0 var(--brand);
+}
+
+/* A pressed category acts as a filter, so it needs a visible
+   "on" state. JavaScript will set aria-pressed="true".
+   Styling the accessibility attribute directly means the visual
+   state and the screen-reader state can never disagree. */
+.category-card[aria-pressed="true"] {
+  background-color: var(--brand);
+  border-color: var(--brand);
+  color: var(--surface);
+}
+
+.category-card[aria-pressed="true"] .category-blurb {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+
+/* ------------------------------------------------------------
+   2.6  SEARCH
+   ------------------------------------------------------------ */
+
+.search-input {
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  background-color: var(--surface);
+  color: var(--ink);
+}
+
+.search-input::placeholder {
+  color: var(--ink-soft);
+}
+
+
+/* ------------------------------------------------------------
+   2.7  FILTER BUTTONS
+
+   Three states, each doing a job:
+     default        — available
+     :hover         — you're pointing at it
+     aria-pressed   — it's currently on
+   ------------------------------------------------------------ */
+
+.filter-legend {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.filter-btn {
+  background-color: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+  font-size: 0.9375rem;
+  transition: background-color 120ms ease, border-color 120ms ease;
+}
+
+.filter-btn:hover {
+  border-color: var(--brand);
+  color: var(--brand);
+}
+
+.filter-btn[aria-pressed="true"] {
+  background-color: var(--brand);
+  border-color: var(--brand);
+  color: var(--surface);
+  font-weight: 600;
+}
+
+/* The "who is welcome" filters get the signature violet, so it's
+   obvious at a glance that they're a different kind of filter. */
+.filter-group--multi .filter-btn[aria-pressed="true"] {
+  background-color: var(--welcome);
+  border-color: var(--welcome);
+}
+
+.clear-btn {
+  background: none;
+  border: none;
+  border-bottom: 1.5px solid var(--ink-soft);
+  border-radius: 0;
+  padding-left: 0;
+  padding-right: 0;
+  color: var(--ink-soft);
+  font-size: 0.875rem;
+}
+
+.clear-btn:hover {
+  color: var(--brand);
+  border-bottom-color: var(--brand);
+}
+
+
+/* ------------------------------------------------------------
+   2.8  FOOTER
+   ------------------------------------------------------------ */
+
+.site-footer {
+  border-top: 2px solid var(--line);
+  margin-top: var(--space-8);
+  color: var(--ink-soft);
+  font-size: 0.9375rem;
+}
+
+
+/* ------------------------------------------------------------
+   2.9  FOCUS AND MOTION
+
+   Not polish. These are the difference between usable and not
+   for someone navigating by keyboard, and for someone whose
+   system settings say animation makes them ill.
+   ------------------------------------------------------------ */
+
+/* :focus-visible fires for keyboard users but NOT for mouse
+   clicks. That's why we use it instead of :focus — you get a
+   clear keyboard outline without a ring appearing every time
+   someone clicks a button with a mouse. */
+:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
