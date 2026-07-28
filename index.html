@@ -271,6 +271,19 @@
       Built in NYC. <a href="https://github.com/YOUR-USERNAME/healing-ninjas">View the code</a>.
     </p>
   </footer>
+  <!-- ============================================
+       SCRIPTS
+
+       Order matters. data.js must load BEFORE script.js,
+       because script.js reads the services array that
+       data.js defines. Reverse them and you get
+       "services is not defined".
+
+       Both sit at the bottom so the browser has already
+       built the page before JavaScript tries to find
+       elements in it.
+       ============================================ -->
+  <script src="data.js"></script>
 
 </body>
 </html>
