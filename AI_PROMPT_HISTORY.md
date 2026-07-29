@@ -208,6 +208,195 @@ Doing the GitHub setup before writing more code.
 
 ---
 
+## Session 11 — Data Collection Spreadsheet
+
+**Date:** July 28, 2026
+
+**What I asked:**
+An Excel sheet for collecting service information, so I could gather data away from the code.
+
+**What came back:**
+A three-tab workbook. Every controlled field is a dropdown rather than a text box, specifically to prevent the typo problem — the filters compare strings letter for letter, so "free" would never match "Free" and nothing would error. The listing would just silently never appear.
+
+The multi-value fields got split into separate Yes/No columns instead of one comma-separated cell, since spreadsheets handle lists inside cells badly and separate columns convert cleanly into the arrays my data file needs.
+
+Two things I hadn't asked for that I'm glad are there: every dropdown includes "Unverified" as a valid answer, and the instructions tab tracks coverage by borough and category so I can see gaps while there's still time to fix them.
+
+**What I did:**
+Using it as my intake form. Transfer a row into `data.js` once the Status column reads READY.
+
+**Note:**
+The dropdowns are the useful part. They solve a bug at the point of entry rather than making me debug it later.
+
+---
+
+## Session 12 — The Render Function
+
+**Date:** July 28, 2026
+
+**What I asked:**
+Write `script.js`. This was the step that turned a styled page into an application.
+
+**What came back:**
+Only the render function — no search or filters yet — with one design decision flagged as the hinge for everything after it:
+
+```javascript
+renderListings(services);
+```
+
+`renderListings` takes the list as an argument rather than reading the global `services` array directly. That means adding filtering later doesn't touch the function at all; you just pass it a different list.
+
+Same principle one level down: `buildCard()` makes a card and returns it without touching the page. `renderListings()` decides what goes where. One job each.
+
+Other things explained: `cloneNode(true)` copies a template and its contents (passing `false` gives an empty shell), `.textContent` instead of `.innerHTML` so a provider's text can never execute, and a `DocumentFragment` so twenty cards cause one layout recalculation instead of twenty.
+
+**What I did:**
+Used it. Tested by running `renderListings([])` in the console to confirm the empty state, and `renderListings([services[0]])` to confirm one card.
+
+**Note:**
+The date handling is the detail I want to remember. `new Date("2026-07-28")` is read as midnight UTC, so in New York it can display the day *before*. Splitting the string by hand avoids time zones completely. I would never have found that on my own — I'd have assumed my data was wrong.
+
+---
+
+## Session 13 — Search
+
+**Date:** July 28, 2026
+
+**What I asked:**
+Add keyword search.
+
+**What came back:**
+More structure than search alone needed, deliberately. A single `state` object holding what the user has chosen, one `matchesX()` function per filter, and one `update()` function as the only path from "state changed" to "screen changed."
+
+The pitch was that every control after this — filter buttons, category cards, clear-all — would follow the same path and none would touch the DOM directly.
+
+Two specifics: `.filter()` returns a new array and leaves the original alone, so `services` always holds everything and there's nothing to restore when a search is cleared. And `addEventListener("input", ...)` rather than `"keyup"`, because keyup misses pasting with a mouse and misses the field's clear button.
+
+**What I did:**
+Took the larger structure even though it was more than I asked for.
+
+**Note:**
+Also flagged: an empty search box has to match *everything*, and getting that backwards makes the page blank on load. That's apparently the classic version of this bug.
+
+---
+
+## Session 14 — Borough and Cost Filters
+
+**Date:** July 28, 2026
+
+**What I asked:**
+Wire up the filter buttons.
+
+**What came back:**
+Event delegation. One listener on the filters container instead of roughly thirty on individual buttons. Clicks bubble up and `event.target.closest(".filter-btn")` works out which button was hit — which also means buttons added later work automatically.
+
+`state[filterName] = value` using bracket notation is what lets a single handler serve every filter group, since the key can be a variable.
+
+And the payoff for the `data-` attributes I put in the HTML on the first day: the JavaScript doesn't hardcode a single borough name. The vocabulary lives in the markup.
+
+**What I did:**
+Used it as written.
+
+**Note:**
+The accessibility piece is the part I'd bring up in an interview. `updateButtonStates()` sets `aria-pressed`, and the CSS styles `[aria-pressed="true"]`. One attribute drives both what a screen reader announces and what a sighted user sees, so they cannot fall out of sync. Toggling a CSS class instead would leave two things to keep in agreement.
+
+---
+
+## Session 15 — Payment, Serves, and Access Filters
+
+**Date:** July 28, 2026
+
+**What I asked:**
+The harder filters — payment matches against an array, access needs multiple selections at once.
+
+**What came back:**
+Three different matching problems.
+
+`serves` was free. Adding the word "serves" to one array plus a four-line function. Nothing that already worked was touched — which was the whole argument for the structure two sessions earlier, demonstrated rather than asserted.
+
+`payment` is single-select in the UI but an array in the data, since one clinic can take Medicaid and insurance and also see uninsured patients. So it's `.includes()`, not `===`.
+
+`access` is array against array using `.every()`, which returns true only when the test passes for all items.
+
+**What I did:**
+All of it.
+
+**Note:**
+The `.every()` versus `.some()` explanation is the single best thing I got in this whole build. `.some()` would mean OR — selecting "no ID required" and "trans affirming" would return places that are only one of the two, sending an undocumented trans person to a clinic that will ask for ID. `.every()` means AND. That's a safety decision expressed as a choice between two array methods, and being able to explain *why* matters more than the three lines of code.
+
+---
+
+## Session 16 — Category Cards, Clear All, Empty State
+
+**Date:** July 28, 2026
+
+**What I asked:**
+Wire up the last two dead controls.
+
+**What came back:**
+Both were short, which was the point. Clear-all is seven obvious lines because everything lives in one `state` object.
+
+But one line in it isn't about state at all:
+
+```javascript
+searchInput.value = "";   // the DOM, not the state
+```
+
+`state.search` and the input's actual value are two different things. Clear one and forget the other, and the box still shows text while the app believes the search is empty.
+
+Also: category cards toggle, so tapping the wrong one can be undone by tapping again. And `matchMedia` to check `prefers-reduced-motion` before smooth-scrolling, because the CSS media query can't reach a scroll triggered by JavaScript.
+
+**What I did:**
+Used it. My MVP logic is complete as of this step.
+
+**Note:**
+"What's on screen disagreeing with what the app believes" was described as one of the most common front-end bugs, and the reason frameworks like React exist. That reframed something for me — I'd assumed frameworks were about convenience.
+
+---
+
+## Session 17 — Phone Layout
+
+**Date:** July 28, 2026
+
+**What I asked:**
+Continue to the next step.
+
+**What came back:**
+The responsive pass, reordered ahead of photos and real listings since those depend on my phone calls rather than on code.
+
+Three fixes:
+
+Touch targets raised to a 44px minimum, from Apple's guidelines and WCAG 2.5.8. Deliberately placed *outside* the media query, because a mouse user with a tremor benefits too.
+
+The iOS zoom bug — Safari on iPhone automatically zooms the whole page in when you tap a text input whose font-size is under 16px, and the zoom doesn't undo itself. One line fixes it. It is invisible on a desktop browser.
+
+The eight access toggles were stacking into a tall column and pushing results below the fold, so each filter group now scrolls sideways on narrow screens.
+
+One breakpoint, at 40rem, chosen because that's where the layout actually breaks rather than because it matches a device.
+
+**What I did:**
+Took it. Testing on my actual phone through GitHub Pages, since simulators don't reproduce the iOS zoom behaviour.
+
+**Note:**
+The iOS zoom thing is the clearest example in this whole log of something I could not have found by testing on my laptop. I'd have shipped it.
+
+---
+
+## Troubleshooting Log
+
+Smaller things that cost me time. Recording them because the fixes are the part I'll actually reuse.
+
+| What happened | What it was | Fix |
+|---|---|---|
+| Added `script.js`, page didn't change | Browser cache serving the old page | Hard refresh — `Cmd + Shift + R` |
+| `.DS_Store` showing in `git status` | macOS Finder metadata, not project files | `.gitignore` |
+| Terminal stuck showing `heredoc>` | Multi-line command still waiting for its closing marker | Type `EOF` on its own line |
+| Couldn't download files | Preview opening instead of download | Copy the contents and paste into a new file |
+
+The cache one is worth internalizing. My instinct was that my code was broken. It wasn't — the browser was showing me a saved copy. Whenever a change doesn't appear, hard refresh *before* debugging.
+
+---
+
 ## Template for Future Entries
 
 ```markdown
@@ -235,3 +424,7 @@ Two patterns show up across these sessions that I want to name.
 **The most valuable responses were the ones that told me no.** Narrowing the scope, refusing to build a review form that wouldn't work, splitting the inclusion filters into two axes. Those made the project smaller and better. If I'd only asked for code, I'd have gotten code, and it would have been worse.
 
 **The context the tool couldn't have guessed was mine to supply.** That reviews and insurance mattered. That undocumented status, LGBTQ+ safety, and gender-specific programs needed to be visible. That the demo happens on a laptop. Every one of those came from knowing the people this is for. The tool structured what I brought — it didn't know what to bring.
+
+There's a third thing I noticed only after reading this log back. The explanations that stuck were the ones tied to a consequence rather than to a convention. I remember `.every()` versus `.some()` because getting it wrong sends an undocumented person somewhere that will ask for ID. I remember the 16px input rule because Safari traps someone on a zoomed page they can't undo. I remember `aria-pressed` because two sources of truth eventually disagree. The rules I'd have forgotten are the ones that were only ever "best practice."
+
+That's how I want to be able to talk about this project. Not as a list of features I implemented, but as a set of decisions with reasons behind them — most of which I can now defend, and a few of which I got wrong first.
