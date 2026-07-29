@@ -263,7 +263,13 @@ function renderListings(list) {
      An empty screen should tell you what to do next, not just sit
      there blank. */
   if (list.length === 0) {
-    resultCount.textContent = "No services match what you're looking for.";
+    /* An empty screen should say what to do next, not just sit
+       there. If filters are on, name that as the likely cause —
+       people forget a filter is active far more often than they
+       mistype a search. */
+    resultCount.textContent = anyFilterActive()
+      ? "No services match all of those filters. Try clearing one."
+      : "No services match that search.";
     return;   // stop here — nothing left to build
   }
 
@@ -327,6 +333,7 @@ const state = {
      comparison simple — the All button literally has
      data-value="all", so state and markup speak the same
      language. */
+  category: "all",
   borough: "all",
   cost: "all",
   payment: "all",
@@ -397,6 +404,7 @@ function getVisibleServices() {
        survive all of them to appear. Adding a filter later means
        adding one more && here — nothing above this line changes. */
     return matchesSearch(service)
+        && matchesCategory(service)
         && matchesBorough(service)
         && matchesCost(service)
         && matchesPayment(service)
@@ -530,6 +538,13 @@ function updateButtonStates() {
       const isOn = state[filterName].includes(value);
       button.setAttribute("aria-pressed", isOn ? "true" : "false");
     }
+  });
+
+  /* The category cards are a different element with a different
+     class, but the same idea: the attribute reflects state. */
+  document.querySelectorAll(".category-card").forEach(function (card) {
+    const isOn = state.category === card.dataset.category;
+    card.setAttribute("aria-pressed", isOn ? "true" : "false");
   });
 }
 
@@ -684,6 +699,142 @@ function matchesAccess(service) {
     return serviceAccess.includes(needed);
   });
 }
+
+
+/* ============================================================
+   STEP 8: CATEGORY CARDS, CLEAR ALL, AND EMPTY STATE
+
+   The last two dead controls on the page. Both are short now,
+   because the state -> update -> render path already exists.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   8.1  CATEGORY MATCH
+
+   Same one-string-to-one-string comparison as borough.
+   ------------------------------------------------------------ */
+
+function matchesCategory(service) {
+  if (state.category === "all") {
+    return true;
+  }
+  return service.category === state.category;
+}
+
+
+/* ------------------------------------------------------------
+   8.2  IS ANYTHING FILTERED?
+
+   Used by the empty state to explain WHY nothing showed up, and
+   it could drive a "clear" button that only appears when it's
+   useful.
+
+   Reading state in one place beats scattering the same six
+   comparisons through the file.
+   ------------------------------------------------------------ */
+
+function anyFilterActive() {
+  return state.search   !== ""
+      || state.category !== "all"
+      || state.borough  !== "all"
+      || state.cost     !== "all"
+      || state.payment  !== "all"
+      || state.serves   !== "all"
+      || state.access.length > 0;
+}
+
+
+/* ------------------------------------------------------------
+   8.3  CATEGORY CARDS
+
+   Event delegation again — one listener on the grid, not six
+   on the cards.
+
+   These TOGGLE. Clicking the active category clears it, so a
+   user who taps the wrong card can undo it by tapping again
+   rather than hunting for a reset.
+   ------------------------------------------------------------ */
+
+const categoryGrid = document.querySelector(".category-grid");
+
+categoryGrid.addEventListener("click", function (event) {
+
+  const card = event.target.closest(".category-card");
+  if (!card) {
+    return;
+  }
+
+  const chosen = card.dataset.category;
+
+  /* Clicking the one that's already on turns it off. */
+  state.category = (state.category === chosen) ? "all" : chosen;
+
+  updateButtonStates();
+  update();
+
+  /* Move the user to the results. Without this, tapping a card
+     on a phone appears to do nothing — the results are below
+     the fold and the page doesn't move. */
+  scrollToResults();
+});
+
+
+/* ------------------------------------------------------------
+   8.4  SCROLLING, WITH A CAVEAT
+
+   Smooth scrolling is pleasant for most people and genuinely
+   unpleasant — nausea, dizziness — for some.
+
+   The CSS already honours prefers-reduced-motion for
+   transitions, but scrolling is triggered in JavaScript, so it
+   has to be checked here too. matchMedia lets JS read the same
+   system setting the CSS media query reads.
+   ------------------------------------------------------------ */
+
+function scrollToResults() {
+
+  const prefersReducedMotion =
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  document.querySelector(".results-area").scrollIntoView({
+    behavior: prefersReducedMotion ? "auto" : "smooth",
+    block: "start"
+  });
+}
+
+
+/* ------------------------------------------------------------
+   8.5  CLEAR ALL FILTERS
+
+   Resetting one object instead of six loose variables — this is
+   the payoff for putting everything in `state` back in step 5.
+
+   The search box needs clearing separately. state.search and
+   the input's value are two different things, and forgetting
+   the second one leaves the box showing text that no longer
+   filters anything. That mismatch between what's on screen and
+   what the app believes is one of the most common front-end
+   bugs, and it's worth naming.
+   ------------------------------------------------------------ */
+
+const clearButton = document.getElementById("clear-filters");
+
+clearButton.addEventListener("click", function () {
+
+  state.search   = "";
+  state.category = "all";
+  state.borough  = "all";
+  state.cost     = "all";
+  state.payment  = "all";
+  state.serves   = "all";
+  state.access   = [];      // a fresh empty array, not .length = 0
+
+  searchInput.value = "";   // the DOM, not the state
+
+  updateButtonStates();
+  update();
+});
 
 
 /* ------------------------------------------------------------
