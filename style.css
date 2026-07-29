@@ -776,3 +776,157 @@ a {
   font-weight: 600;
   color: var(--ink-soft);
 }
+
+
+/* ============================================================
+   SECTION 3: PHONE
+
+   The grids already reflow on their own — that was the point of
+   auto-fit and minmax. What follows fixes things a reflowing
+   grid can't: touch targets, input zoom, and density.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   3.1  TOUCH TARGETS
+
+   A target under 44px is hard to hit accurately with a thumb.
+   That number comes from Apple's guidelines and WCAG 2.5.8, and
+   it applies at ALL screen sizes — a mouse user with a tremor
+   benefits too, which is why this sits outside the media query.
+
+   min-height rather than height: the button can still grow if
+   the label wraps onto two lines.
+   ------------------------------------------------------------ */
+
+.filter-btn,
+.clear-btn,
+.listing-phone,
+.listing-directions,
+.listing-website {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+/* ------------------------------------------------------------
+   3.2  THE iOS ZOOM BUG
+
+   Safari on iPhone automatically zooms the whole page in when a
+   user taps a text field whose font-size is below 16px. The zoom
+   does not undo itself, so the person is left on a page wider
+   than their screen, scrolling sideways to read.
+
+   The fix is simply never to go below 16px on an input. This is
+   a real bug that is invisible on a desktop browser and obvious
+   the second you test on an actual phone.
+   ------------------------------------------------------------ */
+
+.search-input {
+  font-size: 16px;
+}
+
+
+/* ------------------------------------------------------------
+   3.3  NARROW SCREENS
+
+   One breakpoint, at the width where the layout genuinely stops
+   working — not at an arbitrary "phone size". Resize your
+   browser slowly and you'll see this is roughly where the
+   filters start feeling cramped.
+   ------------------------------------------------------------ */
+
+@media (max-width: 40rem) {
+
+  /* Reclaim horizontal space. 1.5rem of padding on each side is
+     comfortable on a laptop and wasteful on a 375px phone. */
+  .site-header,
+  main,
+  .site-footer {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .site-header {
+    padding-top: 1.5rem;
+  }
+
+  /* The eight "who is welcome" toggles stack into a very tall
+     column on a narrow screen, pushing the results far below the
+     fold. Letting each group scroll sideways keeps the filters
+     to one row each.
+
+     -webkit-overflow-scrolling gives iOS momentum scrolling.
+     The negative margin plus matching padding lets the row bleed
+     to the screen edge, which signals "there's more this way"
+     better than a row that stops short. */
+  .filter-group {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;          /* Firefox */
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .filter-group::-webkit-scrollbar {
+    display: none;                  /* Safari and Chrome */
+  }
+
+  /* Buttons must not shrink to fit the row — they should keep
+     their size and let the row scroll instead. */
+  .filter-btn {
+    flex-shrink: 0;
+  }
+
+  /* The legend is full-width and shouldn't scroll with the
+     buttons, so pull it back out of the bleed. */
+  .filter-legend {
+    padding-left: 0;
+  }
+
+  /* Contact buttons go full-width and stack. On a phone these
+     are the primary actions — calling and getting directions —
+     so they should be the easiest things on the card to hit. */
+  .listing-contact {
+    flex-direction: column;
+  }
+
+  .listing-phone,
+  .listing-directions,
+  .listing-website {
+    width: 100%;
+  }
+
+  /* Slightly tighter cards so more than one fits on screen. */
+  .listing-body {
+    padding: var(--space-3);
+  }
+
+  .listings {
+    gap: var(--space-4);
+  }
+}
+
+
+/* ------------------------------------------------------------
+   3.4  VERY NARROW SCREENS
+
+   Below 22rem — older or smaller phones — the display face at
+   its clamp minimum still overflows. This is the only place
+   worth a second breakpoint.
+   ------------------------------------------------------------ */
+
+@media (max-width: 22rem) {
+  .site-title {
+    font-size: 2rem;
+  }
+
+  .category-name {
+    font-size: 1rem;
+  }
+}

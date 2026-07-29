@@ -59,14 +59,16 @@ I chose this deliberately. It keeps the project small enough to finish and simpl
 |---|---|---|
 | 1 | HTML structure — header, category cards, filters, card template | Done |
 | 2 | CSS layout — responsive grid, spacing, card structure | Done |
-| 3 | CSS visual styling — color, type, states | |
-| 4 | Data file — 8–10 verified NYC services | |
-| 5 | JavaScript render — build cards from data using the template | |
-| 6 | Live keyword search | |
-| 7 | Filter logic — borough, cost, payment, access, serves | |
-| 8 | Empty states, clear-filters, missing-image handling | |
-| 9 | Add photos, expand to 20 listings | |
-| 10 | Test on desktop and phone, deploy to GitHub Pages | |
+| 3 | CSS visual styling — design tokens, type, button states | Done |
+| 4 | Data file — structure plus three sample services | Done |
+| 5 | JavaScript render — build cards from data using the template | Done |
+| 6 | Live keyword search | Done |
+| 7 | Filter logic — borough, cost, payment, access, serves | Done |
+| 8 | Category cards, clear-all, empty states | Done |
+| 9 | Responsive pass — touch targets, scrolling filters | Done |
+| 10 | Replace samples with verified NYC services | In progress |
+| 11 | Add photos | |
+| 12 | Final testing and deploy | |
 
 ### Data Structure
 
@@ -111,6 +113,8 @@ Each service is one object with this shape. Keeping it consistent is what makes 
 - **A `<template>` element for listing cards.** Card markup lives in the HTML file rather than as strings inside JavaScript. Cloning a template and setting `.textContent` also can't execute anything a provider typed into a description, which string-building with `innerHTML` can.
 - **`data-` attributes on every filter button.** One click handler reads `data-filter` and `data-value` and serves all filter groups. Adding a new filter type is an HTML change, not a JavaScript change.
 - **`repeat(auto-fit, minmax(260px, 1fr))` for the grids.** The layout reflows from four columns to one without a single media query.
+- **A single `state` object as the source of truth.** Every control changes `state` and calls one `update()` function; none of them touch the DOM directly. Adding a filter means writing one more `matchesX()` function, not editing any that already work.
+- **`.every()` rather than `.some()` for the access filter.** Selecting "no ID required" and "trans affirming" must return only services that are *both*. Using OR here would send an undocumented trans person to a clinic that asks for ID — this is a safety decision, not a style one.
 - **`<button>` for interactive cards, never `<div>`.** Keyboard focus and screen reader semantics come free.
 
 ## Minimum Viable Product
