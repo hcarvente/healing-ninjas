@@ -291,10 +291,145 @@ function renderListings(list) {
 
 
 /* ------------------------------------------------------------
-   4.6  START
-
-   Run once when the file loads. `services` comes from data.js,
-   which is why that script tag has to come first in index.html.
+   4.6  (superseded by section 5.5 — see the bottom of this file)
    ------------------------------------------------------------ */
 
-renderListings(services);
+
+/* ============================================================
+   STEP 5: SEARCH
+
+   Typing in the search box narrows the list as you type.
+
+   The structure below is deliberately bigger than search alone
+   needs. Every filter you add next — borough, cost, access —
+   plugs into it without changing anything that already works.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   5.1  STATE
+
+   One object holding everything the user has currently chosen.
+   Right now it's just the search text. Filters will add keys
+   to it.
+
+   Why one object instead of loose variables: when you want to
+   know "what is the user looking at right now," there's exactly
+   one place to look. And "clear all filters" becomes resetting
+   one object instead of remembering to reset six variables.
+   ------------------------------------------------------------ */
+
+const state = {
+  search: ""
+};
+
+
+/* ------------------------------------------------------------
+   5.2  ONE MATCH FUNCTION PER FILTER
+
+   Each takes a service and answers a yes/no question about it.
+   Small, single-purpose, independently testable.
+
+   Adding a filter later means writing one more of these — not
+   editing the ones that already work.
+   ------------------------------------------------------------ */
+
+function matchesSearch(service) {
+
+  /* No search text means everything passes. Getting this
+     backwards is the classic filter bug: an empty search box
+     matching nothing instead of everything. */
+  if (state.search === "") {
+    return true;
+  }
+
+  /* Glue the searchable fields into one string. Searching name
+     alone is too narrow — someone typing "Bronx" or "walk-in"
+     should find something. */
+  const haystack = [
+    service.name,
+    service.description,
+    service.borough,
+    service.address
+  ].join(" ").toLowerCase();
+
+  /* .includes() asks "does this string contain that string."
+     Both sides are lowercased, so "BRONX", "bronx", and "Bronx"
+     all match. Case-sensitivity here would look like a bug to
+     every user who capitalizes. */
+  return haystack.includes(state.search);
+}
+
+
+/* ------------------------------------------------------------
+   5.3  DECIDE WHAT'S VISIBLE
+
+   .filter() walks the array and keeps only the items where the
+   function returns true. It returns a NEW array and leaves the
+   original untouched.
+
+   That matters: `services` always holds all your data. We never
+   delete from it, so there's nothing to restore when the user
+   clears the search. Deriving a new list instead of mutating
+   the source is one of the most useful habits in this whole
+   project.
+   ------------------------------------------------------------ */
+
+function getVisibleServices() {
+  return services.filter(function (service) {
+    /* When more filters exist, this becomes:
+       return matchesSearch(service) && matchesBorough(service) && ... */
+    return matchesSearch(service);
+  });
+}
+
+
+/* ------------------------------------------------------------
+   5.4  UPDATE
+
+   The single path from "state changed" to "screen changed."
+
+   Every future control — every filter button, the clear button,
+   the category cards — will do the same two things: change
+   `state`, then call update(). None of them will touch the DOM
+   directly. That's what keeps the app from drifting into a mess
+   of controls that each redraw the page their own way.
+   ------------------------------------------------------------ */
+
+function update() {
+  renderListings(getVisibleServices());
+}
+
+
+/* ------------------------------------------------------------
+   5.5  LISTEN FOR TYPING
+
+   "input" fires on every change to the field — typing, pasting,
+   and clicking the little x to clear it.
+
+   Use "input" rather than "keyup": keyup misses pasting with the
+   mouse and misses the clear button, so the list would go stale
+   without the user doing anything obviously wrong.
+   ------------------------------------------------------------ */
+
+const searchInput = document.getElementById("search-input");
+
+searchInput.addEventListener("input", function (event) {
+
+  /* .trim() removes leading and trailing spaces so a stray
+     space doesn't wipe out the results. Lowercased here, once,
+     rather than on every comparison inside the loop. */
+  state.search = event.target.value.trim().toLowerCase();
+
+  update();
+});
+
+
+/* ------------------------------------------------------------
+   5.6  START
+
+   Run once on load. `services` comes from data.js, which is why
+   that script tag has to come first in index.html.
+   ------------------------------------------------------------ */
+
+update();
