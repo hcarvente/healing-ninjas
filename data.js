@@ -67,7 +67,7 @@ const services = [
     languages: ["English"],
     description: "Peer-led healing spaces to support men's emotional well-being, leadership development, and the opportunity and tools to give back to their communities",             // Two sentences max. Plain language.
 
-    image: "all-kings.webp",
+    image: "images/services/all-kings.webp",
     imageAlt: "People in a room circled up in chairs",
 
     reviews: [{ text: "The city quest was a life altering exprience.", source: "Past participant"}],
