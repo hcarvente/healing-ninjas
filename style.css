@@ -933,19 +933,24 @@ a {
 
 
 /* ============================================================
-   SECTION 4: CATEGORY PLACEHOLDERS
+   SECTION 4: CATEGORY ILLUSTRATIONS
 
-   Temporary. All six cards share one transparent SVG, and the
-   colour behind it comes from CSS — so six cards read as six
-   different things from a single 1KB file.
+   Six original SVG illustrations, one per category. Each is
+   drawn with transparent backgrounds in white at varying
+   opacity, so the colour comes from CSS below — one visual
+   system, six distinct cards, under 1KB each.
 
-   To replace one with a real photo:
-     1. Save the photo to images/categories/
+   Original artwork rather than stock photography: no licensing
+   questions on a public repo, sharp at any size, and it avoids
+   the pastel look that most "wellness" stock imagery has.
+
+   To swap one for a real photograph later:
+     1. Save it to images/categories/
      2. Change that card's src in index.html
-     3. Delete that card's rule from 4.2 below
+     3. Optionally delete that card's rule from 4.2
 
-   An opaque photo covers the background colour anyway, so
-   leaving a rule in place breaks nothing — it just does nothing.
+   An opaque photo hides the background colour anyway, so a
+   leftover rule breaks nothing.
    ============================================================ */
 
 
@@ -959,12 +964,11 @@ a {
 .category-img {
   background-color: var(--brand);
 
-  /* The SVG is only 300x200 but the card is wider. Without this,
-     `object-fit: cover` from section 1 would scale the circle up
-     and crop it awkwardly. `contain` keeps the shape intact and
-     centred while the background colour fills the rest. */
-  object-fit: contain;
-  padding: var(--space-4);
+  /* The illustrations are drawn to fill their 3:2 frame, so
+     `cover` from section 1 is correct here — they bleed edge to
+     edge rather than floating in the middle of a colour block.
+     If you swap in a real photograph later, nothing changes. */
+  object-fit: cover;
 }
 
 

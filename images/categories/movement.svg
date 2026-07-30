@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" width="300" height="200" role="presentation">
+  <defs>
+    <pattern id="p" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="16" stroke="#fff" stroke-opacity="0.10" stroke-width="6"/>
+    </pattern>
+  </defs>
+  <rect width="300" height="200" fill="url(#p)"/>
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="12">
+    <path d="M64 58 L112 100 L64 142" stroke-opacity="0.28"/>
+    <path d="M118 58 L166 100 L118 142" stroke-opacity="0.55"/>
+    <path d="M172 58 L220 100 L172 142" stroke-opacity="0.9"/>
+  </g>
+</svg>

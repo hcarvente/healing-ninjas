@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" width="300" height="200" role="presentation">
+  <defs>
+    <pattern id="p" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <line x1="0" y1="0" x2="0" y2="16" stroke="#fff" stroke-opacity="0.10" stroke-width="6"/>
+    </pattern>
+  </defs>
+  <rect width="300" height="200" fill="url(#p)"/>
+  <g fill="none" stroke="#fff" stroke-linecap="round">
+    <circle cx="112" cy="100" r="30" stroke-opacity="0.9" stroke-width="7"/>
+    <path d="M162 62 A48 48 0 0 1 162 138" stroke-opacity="0.65" stroke-width="7"/>
+    <path d="M190 40 A76 76 0 0 1 190 160" stroke-opacity="0.42" stroke-width="7"/>
+    <path d="M218 18 A104 104 0 0 1 218 182" stroke-opacity="0.22" stroke-width="7"/>
+  </g>
+  <circle cx="112" cy="100" r="11" fill="#fff" fill-opacity="0.9"/>
+</svg>
