@@ -853,40 +853,25 @@ a {
     padding-top: 1.5rem;
   }
 
-  /* The eight "who is welcome" toggles stack into a very tall
-     column on a narrow screen, pushing the results far below the
-     fold. Letting each group scroll sideways keeps the filters
-     to one row each.
+  /* Filter buttons WRAP onto multiple lines rather than scrolling
+     sideways.
 
-     -webkit-overflow-scrolling gives iOS momentum scrolling.
-     The negative margin plus matching padding lets the row bleed
-     to the screen edge, which signals "there's more this way"
-     better than a row that stops short. */
-  .filter-group {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;          /* Firefox */
-    margin-left: -1rem;
-    margin-right: -1rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
+     An earlier version scrolled horizontally to keep each group
+     to one row. That was a mistake: iOS draws no scrollbar, so a
+     scrolling row just looks like content that got cut off, and
+     there's no way to tell more exists. Wrapping is taller but
+     everything is visible, and vertical scrolling is what people
+     already do on a phone.
 
-  .filter-group::-webkit-scrollbar {
-    display: none;                  /* Safari and Chrome */
-  }
-
-  /* Buttons must not shrink to fit the row — they should keep
-     their size and let the row scroll instead. */
+     Tighter padding and type keep the wrapped block compact
+     without dropping below the 44px touch target. */
   .filter-btn {
-    flex-shrink: 0;
+    padding: 0.4rem 0.7rem;
+    font-size: 0.875rem;
   }
 
-  /* The legend is full-width and shouldn't scroll with the
-     buttons, so pull it back out of the bleed. */
-  .filter-legend {
-    padding-left: 0;
+  .filter-group {
+    gap: 0.4rem;
   }
 
   /* Contact buttons go full-width and stack. On a phone these
@@ -1032,4 +1017,56 @@ a {
   border-color: var(--signal);
   color: #8A5F00;   /* darkened amber — the token itself is too
                        light to pass contrast on white text */
+}
+
+
+/* ============================================================
+   SECTION 5: OVERFLOW GUARD
+
+   Added after testing on a real iPhone. Pinching to zoom out
+   revealed the page was wider than the screen — the layout sat
+   in a narrow strip with dead space beside it.
+
+   Horizontal overflow on a phone is nearly always caused by one
+   element exceeding the viewport: a negative margin, a fixed
+   pixel width, or a long unbroken string like a URL. The fix
+   below is two parts — clip the page as a safety net, and stop
+   the usual culprits at the source.
+   ============================================================ */
+
+html,
+body {
+  /* Belt and braces. If any future element misbehaves, the page
+     still can't scroll sideways.
+
+     Use `clip` rather than `hidden` where supported: `hidden`
+     silently creates a scroll container, which breaks
+     position: sticky further down the page. `clip` doesn't. */
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+@supports not (overflow-x: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+
+/* Long words and URLs are the other common cause — an unbroken
+   string can't wrap, so it forces the whole page wider. These
+   fields carry provider-supplied text, so they're the likely
+   offenders. */
+.listing-name,
+.listing-description,
+.listing-address,
+.listing-website,
+.review-text,
+.site-intro {
+  overflow-wrap: break-word;
+}
+
+/* Images can't exceed their container even if a file is huge. */
+img {
+  height: auto;
 }
