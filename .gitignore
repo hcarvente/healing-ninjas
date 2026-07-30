@@ -1,1 +1,4 @@
-git status
+.DS_Store
+.vscode/
+.idea/
+*.log

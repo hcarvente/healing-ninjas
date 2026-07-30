@@ -930,3 +930,90 @@ a {
     font-size: 1rem;
   }
 }
+
+
+/* ============================================================
+   SECTION 4: CATEGORY PLACEHOLDERS
+
+   Temporary. All six cards share one transparent SVG, and the
+   colour behind it comes from CSS — so six cards read as six
+   different things from a single 1KB file.
+
+   To replace one with a real photo:
+     1. Save the photo to images/categories/
+     2. Change that card's src in index.html
+     3. Delete that card's rule from 4.2 below
+
+   An opaque photo covers the background colour anyway, so
+   leaving a rule in place breaks nothing — it just does nothing.
+   ============================================================ */
+
+
+/* ------------------------------------------------------------
+   4.1  BASE
+
+   The SVG has a transparent background, so whatever colour we
+   set here shows through the pattern.
+   ------------------------------------------------------------ */
+
+.category-img {
+  background-color: var(--brand);
+
+  /* The SVG is only 300x200 but the card is wider. Without this,
+     `object-fit: cover` from section 1 would scale the circle up
+     and crop it awkwardly. `contain` keeps the shape intact and
+     centred while the background colour fills the rest. */
+  object-fit: contain;
+  padding: var(--space-4);
+}
+
+
+/* ------------------------------------------------------------
+   4.2  ONE TINT PER CATEGORY
+
+   Attribute selectors. [data-category="food"] matches the card
+   whose data-category attribute equals "food" — the same
+   attributes your JavaScript reads, doing a second job here
+   with no extra markup.
+
+   Colours run warm to cool so the six read as a set rather
+   than six unrelated choices.
+   ------------------------------------------------------------ */
+
+.category-card[data-category="mental-health"] .category-img {
+  background-color: #0C5F4E;
+}
+
+.category-card[data-category="physical-health"] .category-img {
+  background-color: #14A57C;
+}
+
+.category-card[data-category="food"] .category-img {
+  background-color: #E8A317;
+}
+
+.category-card[data-category="movement"] .category-img {
+  background-color: #C2571E;
+}
+
+.category-card[data-category="recovery"] .category-img {
+  background-color: #5B3FD1;
+}
+
+.category-card[data-category="community"] .category-img {
+  background-color: #8B3A8E;
+}
+
+
+/* ------------------------------------------------------------
+   4.3  ACTIVE STATE
+
+   A selected card turns pine green, which would clash with the
+   tint. Dropping the image to a low opacity lets the card's own
+   colour dominate while the shape stays faintly visible.
+   ------------------------------------------------------------ */
+
+.category-card[aria-pressed="true"] .category-img {
+  background-color: transparent;
+  opacity: 0.35;
+}
