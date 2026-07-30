@@ -103,7 +103,15 @@ main,
 
 .category-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+
+  /* min(260px, 100%) is the important part.
+     Plain minmax(260px, 1fr) treats 260px as a HARD floor — on a
+     screen narrower than that, the column refuses to shrink and
+     pushes past the viewport, which is what causes a page to
+     scroll sideways on a phone.
+     Wrapping it in min() says "260px, or the full width of the
+     container, whichever is smaller." */
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
   gap: 1rem;
 }
 
@@ -215,8 +223,10 @@ main,
 .listings {
   display: grid;
   /* Wider minimum than the category cards — listing cards carry
-     an address, hours, badges, and reviews, so they need room. */
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+     an address, hours, badges, and reviews, so they need room.
+     Same min() guard: 320px would otherwise overflow any phone
+     narrower than about 360px. */
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
   gap: 1.5rem;
   padding-bottom: 3rem;
 }
@@ -1036,6 +1046,9 @@ a {
 
 html,
 body {
+  background-color: var(--canvas);
+  min-height: 100%;
+
   /* Belt and braces. If any future element misbehaves, the page
      still can't scroll sideways.
 
@@ -1069,4 +1082,39 @@ body {
 /* Images can't exceed their container even if a file is huge. */
 img {
   height: auto;
+}
+
+
+/* ------------------------------------------------------------
+   5.1  GRID AND FLEX CHILDREN CAN SHRINK
+
+   Grid and flex items default to min-width: auto, which means
+   they refuse to shrink below the width of their own content.
+   One long word, a wide badge row, or an un-wrappable URL will
+   push the item — and the whole page — wider than the screen.
+
+   Setting min-width: 0 removes that floor and lets the item
+   shrink, at which point overflow-wrap can do its job.
+
+   This is the single most common cause of unexplained
+   horizontal scrolling in a CSS grid layout.
+   ------------------------------------------------------------ */
+
+.listing,
+.category-card,
+.listing-body,
+.filters,
+.filter-group,
+.listing-contact,
+.listing-badges,
+.listing-reviews {
+  min-width: 0;
+}
+
+/* Badge text can be long ("Not reported to parole/probation").
+   Let it wrap rather than forcing the row wider. */
+.badge {
+  white-space: normal;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
