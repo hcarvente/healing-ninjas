@@ -180,11 +180,19 @@
       </div>
 
       <!-- Result count — JavaScript will update this text -->
-      <p class="result-count" id="result-count"></p>
+      <!-- aria-live="polite" makes a screen reader announce this
+           text whenever it changes, so a filter that changes the
+           result count is audible, not just visible. "polite"
+           waits for a pause rather than interrupting. -->
+      <p class="result-count" id="result-count" aria-live="polite"></p>
 
       <!-- Listings container — JavaScript will fill this in.
            It starts empty on purpose. -->
       <div class="listings" id="listings"></div>
+
+      <!-- Starts hidden. JavaScript reveals it only when there are
+           more results than are currently shown. -->
+      <button class="show-more" id="show-more" hidden></button>
 
     </section>
 
@@ -204,7 +212,11 @@
        a provider typed into a description.
        ============================================ -->
   <template id="listing-template">
-    <article class="listing">
+    <!-- tabindex="-1" makes the card focusable by JavaScript
+         without adding it to the normal Tab order. Used after
+         "Show more" so keyboard and screen reader users land on
+         the first new result instead of losing their place. -->
+    <article class="listing" tabindex="-1">
 
       <!-- Photo of the location or service.
            src and alt are set by JavaScript. -->

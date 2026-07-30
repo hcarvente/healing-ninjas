@@ -1118,3 +1118,47 @@ img {
   overflow-wrap: break-word;
   max-width: 100%;
 }
+
+
+/* ------------------------------------------------------------
+   5.2  SHOW MORE BUTTON
+   ------------------------------------------------------------ */
+
+.show-more {
+  display: block;
+  width: 100%;
+  max-width: 24rem;
+  margin: 0 auto var(--space-12);
+  min-height: 48px;
+
+  background-color: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius);
+  color: var(--ink);
+
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+
+  transition: background-color 150ms ease, color 150ms ease;
+}
+
+.show-more:hover {
+  background-color: var(--ink);
+  color: var(--surface);
+}
+
+/* A card that receives focus programmatically after "Show more"
+   shouldn't show the same heavy outline as a keyboard-navigated
+   one — it wasn't the user's own Tab press. A softer marker is
+   enough to say "you are here". */
+.listing:focus-visible {
+  outline: 3px solid var(--signal);
+  outline-offset: 3px;
+}
+
+.listing:focus:not(:focus-visible) {
+  outline: 2px solid var(--brand);
+  outline-offset: 3px;
+}

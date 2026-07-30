@@ -278,18 +278,8 @@ function renderListings(list) {
      empty string, not user data. */
   listingsContainer.innerHTML = "";
 
-  /* --- Empty state ---
-     An empty screen should tell you what to do next, not just sit
-     there blank. */
   if (list.length === 0) {
-    /* An empty screen should say what to do next, not just sit
-       there. If filters are on, name that as the likely cause —
-       people forget a filter is active far more often than they
-       mistype a search. */
-    resultCount.textContent = anyFilterActive()
-      ? "No services match all of those filters. Try clearing one."
-      : "No services match that search.";
-    return;   // stop here — nothing left to build
+    return;   // nothing to build; update() handles the message
   }
 
   /* A DocumentFragment is a lightweight container that lives in
@@ -306,12 +296,6 @@ function renderListings(list) {
   });
 
   listingsContainer.appendChild(fragment);
-
-  /* --- Result count ---
-     Say "1 service" not "1 services". Small thing; sloppy grammar
-     in an interface reads as sloppy everywhere else. */
-  const word = list.length === 1 ? "service" : "services";
-  resultCount.textContent = `Showing ${list.length} ${word}`;
 }
 
 
@@ -344,8 +328,17 @@ function renderListings(list) {
    one object instead of remembering to reset six variables.
    ------------------------------------------------------------ */
 
+/* How many listings to show at once, and how many each press of
+   "Show more" adds. One constant so the two can never drift. */
+const PAGE_SIZE = 8;
+
 const state = {
   search: "",
+
+  /* How many of the matching results are currently on screen.
+     Resets whenever a filter changes — a new search should start
+     from the top, not halfway down the previous one. */
+  visibleCount: PAGE_SIZE,
 
   /* "all" is the neutral value meaning "don't filter on this."
      Using a real string rather than null or "" keeps the button
@@ -418,7 +411,8 @@ function matchesSearch(service) {
    ------------------------------------------------------------ */
 
 function getVisibleServices() {
-  return services.filter(function (service) {
+
+  const matches = services.filter(function (service) {
     /* && means EVERY condition must be true. A service has to
        survive all of them to appear. Adding a filter later means
        adding one more && here — nothing above this line changes. */
@@ -429,6 +423,24 @@ function getVisibleServices() {
         && matchesPayment(service)
         && matchesServes(service)
         && matchesAccess(service);
+  });
+
+  /* Sort newest-verified first.
+
+     [...matches] copies the array before sorting, because .sort()
+     MUTATES the array it's called on — unlike .filter(), which
+     returns a new one. That asymmetry catches people out: sorting
+     without copying would permanently reorder your source data.
+
+     localeCompare compares two strings alphabetically. Because
+     dates are stored as "YYYY-MM-DD", alphabetical order IS
+     chronological order, so no date parsing is needed. Passing
+     b before a reverses it to newest-first.
+
+     Sorting by verification date rewards keeping data current:
+     re-checking a listing moves it back to the top. */
+  return [...matches].sort(function (a, b) {
+    return b.lastVerified.localeCompare(a.lastVerified);
   });
 }
 
@@ -446,7 +458,106 @@ function getVisibleServices() {
    ------------------------------------------------------------ */
 
 function update() {
-  renderListings(getVisibleServices());
+
+  /* Everything that matches, sorted. */
+  const all = getVisibleServices();
+
+  /* .slice(0, n) returns the first n items as a NEW array — it
+     doesn't remove anything. The rest stay in `all`, ready for
+     the next press of "Show more". */
+  const shown = all.slice(0, state.visibleCount);
+
+  renderListings(shown);
+  updateCount(shown.length, all.length);
+  updateShowMore(shown.length, all.length);
+}
+
+
+/* ------------------------------------------------------------
+   RESULT COUNT
+
+   Three cases: nothing matched, everything is shown, or some of
+   it is shown. Each needs different wording.
+   ------------------------------------------------------------ */
+
+function updateCount(shownCount, totalCount) {
+
+  if (totalCount === 0) {
+    /* Say what to do next, not just "no results". People forget a
+       filter is active far more often than they mistype. */
+    resultCount.textContent = anyFilterActive()
+      ? "No services match all of those filters. Try clearing one."
+      : "No services match that search.";
+    return;
+  }
+
+  /* "1 service", not "1 services". Sloppy grammar in an interface
+     reads as sloppy everywhere else. */
+  const word = totalCount === 1 ? "service" : "services";
+
+  resultCount.textContent = shownCount < totalCount
+    ? `Showing ${shownCount} of ${totalCount} ${word}`
+    : `Showing ${totalCount} ${word}`;
+}
+
+
+/* ------------------------------------------------------------
+   SHOW MORE BUTTON
+
+   Visible only when there is more to show, and it says exactly
+   how many. "Show 5 more" tells someone whether it's worth the
+   tap; a bare "Show more" doesn't.
+   ------------------------------------------------------------ */
+
+const showMoreButton = document.getElementById("show-more");
+
+function updateShowMore(shownCount, totalCount) {
+
+  const remaining = totalCount - shownCount;
+
+  showMoreButton.hidden = remaining <= 0;
+
+  if (remaining > 0) {
+    /* Math.min so the last press says "Show 3 more" rather than
+       promising a full page that isn't there. */
+    const next = Math.min(remaining, PAGE_SIZE);
+    showMoreButton.textContent = `Show ${next} more`;
+  }
+}
+
+showMoreButton.addEventListener("click", function () {
+
+  /* Remember where the list ended, so we can move focus to the
+     first NEW card afterwards. */
+  const firstNewIndex = state.visibleCount;
+
+  state.visibleCount += PAGE_SIZE;
+  update();
+
+  /* Without this, a keyboard user pressing "Show more" would be
+     dropped back at the top of the document, and a screen reader
+     user would get no signal that anything happened. Moving focus
+     to the first new result puts them exactly where the new
+     content starts. */
+  const firstNewCard = listingsContainer.children[firstNewIndex];
+  if (firstNewCard) {
+    firstNewCard.focus();
+  }
+});
+
+
+/* ------------------------------------------------------------
+   FILTERS CHANGED
+
+   Every control calls this instead of updateButtonStates() and
+   update() separately, so none of them can forget to reset the
+   paging. One function, one place to change.
+   ------------------------------------------------------------ */
+
+function filtersChanged() {
+  state.visibleCount = PAGE_SIZE;
+  updateButtonStates();
+  update();
 }
 
 
@@ -470,7 +581,7 @@ searchInput.addEventListener("input", function (event) {
      rather than on every comparison inside the loop. */
   state.search = event.target.value.trim().toLowerCase();
 
-  update();
+  filtersChanged();
 });
 
 
@@ -655,8 +766,7 @@ filtersContainer.addEventListener("click", function (event) {
     }
   }
 
-  updateButtonStates();
-  update();
+  filtersChanged();
 });
 
 
@@ -815,8 +925,7 @@ categoryGrid.addEventListener("click", function (event) {
   /* Clicking the one that's already on turns it off. */
   state.category = (state.category === chosen) ? "all" : chosen;
 
-  updateButtonStates();
-  update();
+  filtersChanged();
 
   /* Move the user to the results. Without this, tapping a card
      on a phone appears to do nothing — the results are below
@@ -877,8 +986,7 @@ clearButton.addEventListener("click", function () {
 
   searchInput.value = "";   // the DOM, not the state
 
-  updateButtonStates();
-  update();
+  filtersChanged();
 });
 
 
