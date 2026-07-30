@@ -382,6 +382,144 @@ The iOS zoom thing is the clearest example in this whole log of something I coul
 
 ---
 
+## Session 18 — Services Without a Fixed Address
+
+**Date:** July 30, 2026
+
+**What I asked:**
+I realized my borough filter assumed every organization has a physical space. Some of the groups I want to list have remote staff and host gatherings at partner organizations' sites. I asked what to do about it.
+
+**What came back:**
+That this was the same problem as the inclusion filters — two questions wearing one label. "Which borough" is really asking "can I get to this," which splits into whether there's a physical place at all and, if so, where.
+
+Three changes: `borough` now accepts a string or an array, a `Citywide` value that matches every borough filter, and a `format` field for display only.
+
+The reasoning on Citywide is the part I'd repeat: a remote service is reachable from every borough, so filtering it out when someone picks Staten Island would hide exactly the services that have no geography.
+
+**What I did:**
+All of it. Also updated my data collection spreadsheet, which surfaced a consequence I hadn't thought about — address could no longer be a required field, because remote services don't have one. Phone became required instead.
+
+**Note:**
+This one came from me, not the tool. I knew these organizations existed because I work with them. The fix was also backwards compatible — the code normalizes whatever shape it gets, so my existing entries kept working without edits. That's a migration strategy rather than a rewrite, and I didn't know that was a thing you could do.
+
+---
+
+## Session 19 — Category Illustrations
+
+**Date:** July 30, 2026
+
+**What I asked:**
+The category cards looked like boring boxes. I wanted images.
+
+**What came back:**
+Six original SVG illustrations rather than stock photography, with the argument that stock "wellness" imagery is almost universally pastel and affluent-looking, which is the wrong register for this project — and that original artwork avoids licensing questions on a public repo entirely.
+
+Each SVG is drawn in white at varying opacity on a transparent background, so the colour comes from CSS. One visual system, six distinct cards, under 1KB each.
+
+**What I did:**
+Used them. They look intentional, which the coloured boxes didn't.
+
+**Note:**
+The CSS uses attribute selectors — `[data-category="food"]` — to tint each card. Those are the same `data-` attributes my JavaScript reads for filtering. That's the third separate job those attributes have done.
+
+---
+
+## Session 20 — The Image That Wouldn't Load
+
+**Date:** July 30, 2026
+
+**What I asked:**
+My first real listing's photo showed only alt text.
+
+**What came back:**
+Three wrong guesses before we got it. Suggestions in order: a filename case mismatch, then a HEIC file renamed rather than converted, then a WebP renamed rather than converted.
+
+The second and third were partly right — I *had* downloaded a `.webp` from the organization's website and simply renamed it `.jpg`, which changes the label and not the bytes. But that wasn't why it failed.
+
+It only got solved when I was asked to stop describing the symptom and paste actual output — `ls`, `file`, and `grep "image" data.js`. One line of that showed it immediately:
+
+```javascript
+image: "all-kings.webp",     // missing the folder
+```
+
+Paths are written from where `index.html` sits, not from where the image sits.
+
+**What I did:**
+Fixed the path. Also cleaned up a leftover `.jpeg` that Git was still tracking — `git add` on a folder stages deletions, not just additions.
+
+**Note:**
+The browser Console had the exact 404 the entire time, with the full path it was asking for. Reading it first would have taken one minute instead of four rounds. That's the lesson I actually want to keep: when something visual doesn't work, open Console before changing any files.
+
+Also worth recording that I found my project wasn't where I thought it was. Every `cd ~/Desktop/healing-ninjas` had been failing silently in the background because it's in my home folder, not Desktop.
+
+---
+
+## Session 21 — The iPhone Overflow Bug
+
+**Date:** July 30, 2026
+
+**What I asked:**
+A friend opened the live site on an iPhone and said it looked wonky when zoomed out, with filters cutting off.
+
+**What came back:**
+An admission that the horizontal-scrolling filter rows were a bad recommendation made earlier in this build. The reasoning had been that eight access toggles stacked into too tall a column on a phone. But iOS draws no scrollbar, so a row that scrolls sideways just looks like content that got cut off — which is exactly what my friend reported.
+
+Reverted to wrapping. Then, when the page was *still* wider than the screen, a second cause: my listings grid used `minmax(320px, 1fr)`, and that 320px is a hard floor. On a narrower phone the column refuses to shrink and pushes past the viewport. Fixed with `minmax(min(320px, 100%), 1fr)`.
+
+I also asked whether I could just stop people zooming out. The answer was no, and I shouldn't want to — iOS ignores `user-scalable=no` anyway, and disabling zoom is a well-known accessibility failure. For an app built for people who might be reading on a cracked screen in bad light, that would undercut the whole argument.
+
+**What I did:**
+Took the revert and both fixes.
+
+**Note:**
+This is the entry I'd point to if someone asks whether I just did what the AI told me. The horizontal scroll was a recommendation I accepted, and it was wrong. Testing on a real device found it in thirty seconds. The framing that stuck with me: *it optimized for a problem it imagined — filters being too tall — and created a real one, invisible content.*
+
+Also learned that `overflow-x: hidden` silently creates a scroll container and breaks `position: sticky` further down the page, while `overflow-x: clip` doesn't.
+
+---
+
+## Session 22 — Sorting and Pagination
+
+**Date:** July 30, 2026
+
+**What I asked:**
+New listings kept appending to the bottom. I was worried twenty services would be overwhelming.
+
+**What came back:**
+First, that twenty isn't a crisis and my filters already solve most of it — someone looking for free confidential mental health support in the Bronx gets two results, not twenty. A long unfiltered list is the "I haven't told you what I need yet" state, and being long is arguably correct there.
+
+But one thing was worth fixing regardless: my listings rendered in whatever order I typed them into `data.js`, which isn't a decision, it's an accident. Sorting newest-verified-first is five lines and reinforces the argument the whole project rests on.
+
+Then a "Show more" button showing eight at a time.
+
+**What I did:**
+Both. The refactor that came with it was the interesting part — every control now calls one `filtersChanged()` function instead of updating button states and re-rendering separately, because each of five handlers needed to reset the paging and I'd have forgotten one.
+
+**Note:**
+Two things I want to remember. `.sort()` mutates the array it's called on; `.filter()` returns a new one. So you copy with `[...matches]` before sorting or you permanently reorder your source data.
+
+And because I stored dates as `YYYY-MM-DD`, alphabetical order *is* chronological order — no date parsing needed. That was a decision made on day one for a completely different reason, and it paid off here.
+
+---
+
+## Session 23 — Deciding What Not To Build
+
+**Date:** July 30, 2026
+
+**What I asked:**
+Effectively, "should I add something to handle a long list?"
+
+**What came back:**
+Less than I asked for. Pagination, sorting by distance, and letting users choose a sort order were all pushed into future work as needing either a backend, geolocation, or more UI than the problem justifies at twenty listings.
+
+**What I did:**
+Took the smaller version.
+
+**Note:**
+Putting this in its own entry because it's a pattern across this whole build. The most useful responses consistently made the project *smaller*. Narrowing the scope on day one. Refusing to build a review form that wouldn't work. Talking me out of extra sort options. I came in assuming more features meant a better submission.
+
+---
+
 ## Troubleshooting Log
 
 Smaller things that cost me time. Recording them because the fixes are the part I'll actually reuse.
@@ -392,6 +530,11 @@ Smaller things that cost me time. Recording them because the fixes are the part 
 | `.DS_Store` showing in `git status` | macOS Finder metadata, not project files | `.gitignore` |
 | Terminal stuck showing `heredoc>` | Multi-line command still waiting for its closing marker | Type `EOF` on its own line |
 | Couldn't download files | Preview opening instead of download | Copy the contents and paste into a new file |
+| Image showed alt text only | Path in `data.js` was missing its folder; the file was a `.webp` renamed to `.jpg` | Match the path to where `index.html` sits; export to convert, never rename |
+| `git status` said a file was deleted | Both `.jpg` and `.jpeg` had been committed | `git add` on the folder — it stages deletions too |
+| Terminal stuck showing `dquote>` | Unclosed quote around a filename with a space | `Ctrl + C`, or drag the file in from Finder |
+| Page wider than the screen on iPhone | Grid column with a hard 320px minimum | `minmax(min(320px, 100%), 1fr)` plus `min-width: 0` on grid children |
+| `cd ~/Desktop/healing-ninjas` failed | Project is in my home folder, not Desktop | `pwd` tells you where you actually are |
 
 The cache one is worth internalizing. My instinct was that my code was broken. It wasn't — the browser was showing me a saved copy. Whenever a change doesn't appear, hard refresh *before* debugging.
 
@@ -428,3 +571,9 @@ Two patterns show up across these sessions that I want to name.
 There's a third thing I noticed only after reading this log back. The explanations that stuck were the ones tied to a consequence rather than to a convention. I remember `.every()` versus `.some()` because getting it wrong sends an undocumented person somewhere that will ask for ID. I remember the 16px input rule because Safari traps someone on a zoomed page they can't undo. I remember `aria-pressed` because two sources of truth eventually disagree. The rules I'd have forgotten are the ones that were only ever "best practice."
 
 That's how I want to be able to talk about this project. Not as a list of features I implemented, but as a set of decisions with reasons behind them — most of which I can now defend, and a few of which I got wrong first.
+
+**One more thing, added at the end of the build.** Somewhere in the middle of this log the tool gives me a recommendation that turns out to be wrong. It suggested horizontal-scrolling filter rows to save vertical space on a phone, I accepted it, and a friend testing on an actual iPhone found within thirty seconds that it made content invisible. We reverted it.
+
+I'm leaving that in deliberately. A log where the AI is right every time isn't evidence that I understood anything — it's evidence that I typed what I was told. The sessions where I supplied context it couldn't have guessed, where I overruled it on the project name and on building desktop-first, and where its advice broke on contact with a real device, are the ones that show I was actually running this.
+
+The tool was fast and it was often right. It was not the one deciding whether the thing worked.
