@@ -75,6 +75,34 @@ const services = [
     lastVerified: "2026-07-30",
     verifiedBy: "Healing Ninjas CEO"               // e.g. "Verified via provider website, July 2026"
   },
+{
+    name: "Community Connections for Youth",                    // As they'd say it on the phone
+    category: "community",                // mental-health | physical-health | food | movement | recovery | community
+    borough: "Bronx",                 // Bronx | Brooklyn | Manhattan | Queens | Staten Island | Citywide
+    format: "in-person",         // in-person | roving | remote | hybrid
+
+    cost: "Free",                    // Free | Sliding Scale | Low-Cost
+    payment: ["no-cost"],                 // any of: "no-cost", "medicaid", "insurance", "uninsured"
+    insuranceNotes: "No insurance required",
+
+    access: ["reentry", "no-id", "lgbtq", "trans", "confidential", "wheelchair", "youth"],                  // ONLY what you verified. Empty is honest.
+    serves: "all-genders",       // all-genders | women | men | trans-nonbinary
+
+    address: "369 East 149th Street, 7th Floor, Bronx, NY 10455",
+    phone: "347-590-0940",
+    hours: "Daily, 9am-5pm",
+    website: "https://www.cc-fy.org/",
+    languages: ["English, Spanish"],
+    description: "Non-profit organization in the South Bronx dedicated to ending youth incarceration through direct support, advocacy, mentoring, training, and building partnerships.",             // Two sentences max. Plain language.
+
+    image: "images/services/cc4y.webp",
+    imageAlt: "People holding no kids in prison banners protesting",
+
+    reviews: [],
+
+    lastVerified: "2026-07-30",
+    verifiedBy: "Healing Ninjas CEO"               // e.g. "Verified via provider website, July 2026"
+  },
 
   /* ----------------------------------------------------------
      ENTRY 1 — the complete case.
