@@ -10,7 +10,7 @@ New York City has an enormous amount of free and low-cost wellness support — c
 
 The information exists, but it is scattered across agency PDFs, out-of-date 311 listings, printed handouts, and the personal knowledge of individual caseworkers. If you are a young person leaving a court program, or someone coming home after incarceration, you are typically handed a photocopied list of referrals. Half the numbers are disconnected. Some of the programs closed years ago. Almost none of them tell you the things you actually need to know: does it cost money, will my insurance work, and will I be treated with dignity when I walk in?
 
-I run a youth justice organization in Queens, and I have watched this play out for years. The barrier is rarely that services don't exist. The barrier is that finding them requires knowing someone who already knows. That is a network problem, and networks are exactly what incarceration and system involvement take away from people.
+I run a organization thats provides leadership development training for Latine, Afro-Latine, and Indigenous young leaders ages 18-25 in New York City, and I have watched this play out over the last 14 years of my career. The barrier is rarely that services don't exist. The barrier is that finding them requires knowing someone who already knows. That is a network problem, and networks are exactly what incarceration and system involvement take away from people.
 
 There is a second problem underneath the first. Most existing resource directories are built *for* service providers rather than *for* the people being served. They use clinical language, they assume you have insurance, and they never say plainly whether a place is safe for someone with a record, someone who is undocumented, or someone who is trans.
 
@@ -66,9 +66,9 @@ I chose this deliberately. It keeps the project small enough to finish and simpl
 | 7 | Filter logic — borough, cost, payment, access, serves | Done |
 | 8 | Category cards, clear-all, empty states | Done |
 | 9 | Responsive pass — touch targets, scrolling filters | Done |
-| 10 | Replace samples with verified NYC services | In progress |
-| 11 | Add photos | |
-| 12 | Final testing and deploy | |
+| 10 | Replace samples with verified NYC services | Done |
+| 11 | Add photos | Done |
+| 12 | Final testing and deploy | Done |
 
 ### Data Structure
 
@@ -200,7 +200,7 @@ Then open `http://localhost:8000` in a browser. No build step, no dependencies.
 
 ## A Note on Where This Comes From
 
-I am the executive director of a youth justice nonprofit in Queens and a first-generation college graduate. I have spent my career on the referral side of this problem — being the person who knows which door to knock on, and watching how much depends on whether someone happens to have access to a person like me.
+I am the executive director of a nonprofit serving New York City and a first-generation college graduate. I have spent my career on the referral side of this problem — being the person who knows which door to knock on, and watching how much depends on whether someone happens to have access to a person like me.
 
 This project is an attempt to put a small piece of that knowledge somewhere it doesn't depend on me.
 
