@@ -63,6 +63,13 @@ const CATEGORY_LABELS = {
   "community":       "Community & Healing"
 };
 
+const FORMAT_LABELS = {
+  "in-person": "",                      // the default — no badge needed
+  "remote":    "Remote — phone or video",
+  "roving":    "Meets at partner sites",
+  "hybrid":    "In person & remote"
+};
+
 const SERVES_LABELS = {
   "all-genders":     "All genders",
   "women":           "Women & femmes",
@@ -151,9 +158,15 @@ function buildCard(service) {
   card.querySelector(".listing-name").textContent = service.name;
 
   /* --- Meta line: category, borough, who it serves --- */
+  /* borough may be a string or an array — join arrays with a
+     slash so "Bronx / Queens" reads naturally in the meta line. */
+  const boroughText = Array.isArray(service.borough)
+    ? service.borough.join(" / ")
+    : service.borough;
+
   const metaParts = [
     CATEGORY_LABELS[service.category],
-    service.borough,
+    boroughText,
     SERVES_LABELS[service.serves]
   ];
   card.querySelector(".listing-meta").textContent = metaParts.join(" · ");
@@ -168,6 +181,12 @@ function buildCard(service) {
   const badgeList = card.querySelector(".listing-badges");
 
   addBadge(badgeList, service.cost, "cost");
+
+  /* Format is display-only — there's no filter for it. It answers
+     "do I have to travel to this?", which the badges above don't. */
+  if (service.format && FORMAT_LABELS[service.format]) {
+    addBadge(badgeList, FORMAT_LABELS[service.format], "format");
+  }
 
   /* Optional chaining (?.) and || [] both guard against the field
      being missing. Remember Entry 2 in data.js leaves keys out
@@ -485,10 +504,36 @@ const MULTI_SELECT_FILTERS = ["access"];
    ------------------------------------------------------------ */
 
 function matchesBorough(service) {
+
   if (state.borough === "all") {
     return true;
   }
-  return service.borough === state.borough;
+
+  /* borough may be a single string ("Queens") or an array
+     (["Bronx", "Queens"]) for organizations that gather at
+     partner sites in more than one place.
+
+     Array.isArray() checks which we got, and we wrap a lone
+     string in an array so the rest of the function only has to
+     handle one shape. Normalizing like this means the older
+     string-only entries keep working with no edits — you can
+     change data gradually instead of all at once. */
+  const boroughs = Array.isArray(service.borough)
+    ? service.borough
+    : [service.borough];
+
+  /* Someone specifically browsing citywide services wants ONLY
+     those, so check this before the rule below. */
+  if (state.borough === "Citywide") {
+    return boroughs.includes("Citywide");
+  }
+
+  /* A citywide service — remote staff, phone or video, no fixed
+     address — is reachable from every borough, so it should
+     appear no matter which borough is selected. Filtering it out
+     would hide exactly the services that have no geography. */
+  return boroughs.includes("Citywide")
+      || boroughs.includes(state.borough);
 }
 
 function matchesCost(service) {

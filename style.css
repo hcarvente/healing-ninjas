@@ -1017,3 +1017,15 @@ a {
   background-color: transparent;
   opacity: 0.35;
 }
+
+
+/* --- Format badge ---
+   Amber, matching the verification date, because both answer
+   "what should I know before I go" rather than "who is welcome". --- */
+
+.badge--format {
+  background-color: transparent;
+  border-color: var(--signal);
+  color: #8A5F00;   /* darkened amber — the token itself is too
+                       light to pass contrast on white text */
+}
