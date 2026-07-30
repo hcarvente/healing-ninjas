@@ -47,6 +47,35 @@
 
 const services = [
 
+{
+    name: "All Kings",                    // As they'd say it on the phone
+    category: "community",                // mental-health | physical-health | food | movement | recovery | community
+    borough: "Citywide",                 // Bronx | Brooklyn | Manhattan | Queens | Staten Island | Citywide
+    format: "hybrid",         // in-person | roving | remote | hybrid
+
+    cost: "Free",                    // Free | Sliding Scale | Low-Cost
+    payment: ["no-cost"],                 // any of: "no-cost", "medicaid", "insurance", "uninsured"
+    insuranceNotes: "No insurance required",
+
+    access: ["reentry", "no-id", "lgbtq", "trans", "confidential", "wheelchair", "youth"],                  // ONLY what you verified. Empty is honest.
+    serves: "men",       // all-genders | women | men | trans-nonbinary
+
+    address: "",
+    phone: "646-623-2501",
+    hours: "Daily, 9am-5pm",
+    website: "https://www.allkings.org/",
+    languages: ["English"],
+    description: "Peer-led healing spaces to support men's emotional well-being, leadership development, and the opportunity and tools to give back to their communities",             // Two sentences max. Plain language.
+
+    image: "all-kings.jpg",
+    imageAlt: "People in a room circled up in chairs",
+
+    reviews: [{ text: "The city quest was a life altering exprience.", source: "Past participant"}],
+
+    lastVerified: "2026-07-30",
+    verifiedBy: "Healing Ninjas CEO"               // e.g. "Verified via provider website, July 2026"
+  },
+
   /* ----------------------------------------------------------
      ENTRY 1 — the complete case.
      Has every optional field filled in. Use this one to check
